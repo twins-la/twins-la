@@ -20,10 +20,11 @@ The page MUST include a clearly labeled, copyable code block containing the agen
 
 ### Design
 The page MUST follow the twins.la visual design:
-- Background: `#0a0a0a`
+- Background: `#f8f8f8`
 - Font: Inter (with system fallbacks)
-- Text: white (`#ffffff`) for headings, gray (`#999`) for body
-- Accent: `#4a9eff` for links
+- Text: near-black (`#111827`) for headings, gray (`#6b7280`) for body
+- Accent: `#2563eb` for links
+- Cards/code blocks: white (`#ffffff`) with `#e5e7eb` border and subtle shadow
 - Max content width: `700px`, centered
 - Responsive (works on mobile)
 
