@@ -22,11 +22,17 @@ The page MUST include a clearly labeled, copyable code block containing the agen
 The page MUST follow the twins.la visual design:
 - Background: `#f8f8f8`
 - Font: Inter (with system fallbacks)
-- Text: near-black (`#111827`) for headings, gray (`#6b7280`) for body
-- Accent: `#2563eb` for links
+- Text: dark navy (`#1a2e4a`) for headings, gray (`#6b7280`) for body
+- Accent: teal (`#0e7490`) for links on the landing page; each twin page uses its own accent color reflecting the provider's brand (e.g., Twilio rose `#e11d48`)
 - Cards/code blocks: white (`#ffffff`) with `#e5e7eb` border and subtle shadow
+- Favicon: `https://twins.la/twins.png`
 - Max content width: `700px`, centered
 - Responsive (works on mobile)
+
+Each twin's explainer page SHOULD use a thematic accent color from the provider's brand for:
+- The provider name in the h1 (e.g., `<span class="twilio">twilio</span>.twins.la`)
+- Links and interactive highlights
+- List item markers
 
 The page SHOULD be self-contained HTML with inline CSS (no external stylesheets beyond the font import). This keeps pages independent and avoids cross-origin dependencies.
 
