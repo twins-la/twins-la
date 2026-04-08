@@ -29,8 +29,18 @@ The page MUST follow the twins.la visual design:
 - Max content width: `700px`, centered
 - Responsive (works on mobile)
 
-Each twin's explainer page SHOULD use a thematic accent color from the provider's brand for:
-- The provider name in the h1 (e.g., `<span class="twilio">twilio</span>.twins.la`)
+### Provider Name Styling
+
+Wherever a twin is referenced as `<provider>.twins.la` — in page titles, headings, card links, or inline text — the provider name MUST be rendered in that provider's official brand color. The `.twins.la` portion remains in the default text color. Use a `<span>` with a class named after the provider to apply the color.
+
+Example: `<span class="twilio">twilio</span>.twins.la` where `.twilio { color: #e11d48; }`
+
+This applies across all pages, not just the twin's own explainer:
+- On the **landing page**, twin card headings use the provider color for the provider name
+- On the **explainer page**, the h1 uses the provider color for the provider name
+- In any **documentation or cross-references**, the same convention applies
+
+Each twin's explainer page SHOULD also use the provider's brand color as its thematic accent for:
 - Links and interactive highlights
 - List item markers
 
