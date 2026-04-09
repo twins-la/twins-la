@@ -1,7 +1,7 @@
 ---
 title: "twins.la"
 summary: "High-fidelity digital twins of real APIs — write against a twin, deploy against the real thing."
-shipped: 2026-03-01
+shipped: 2026-04-04
 tags: [api, digital-twins, testing, developer-tools, agents]
 links:
   - label: "Website"
@@ -9,7 +9,9 @@ links:
     primary: true
   - label: "Twilio Twin"
     url: "https://twilio.twins.la"
-icon: "../twins.png"
+  - label: "LiveKit Twin"
+    url: "https://github.com/twins-la/livekit"
+icon: "../twins-la.png"
 ---
 
 ## What is it?
