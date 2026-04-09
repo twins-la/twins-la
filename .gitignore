@@ -1,0 +1,3 @@
+# Darkprompts job artifacts must not be committed to public repos
+jobs/
+darkprompts/
