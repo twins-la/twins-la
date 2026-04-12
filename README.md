@@ -22,14 +22,14 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 
 **Cloud** — Each twin runs at its own subdomain. Create an account via `POST /_twin/accounts`, get credentials, and use the standard provider API against the twin's URL.
 
-**Local** — Install the twin package and run it on localhost:
+**Local** — Install the twin's local package and run it on localhost:
 
 ```bash
-pip install twins-twilio twins-local
+pip install twins-twilio-local
 ```
 
 ```python
-from twins_local.storage_sqlite import SQLiteStorage
+from twins_twilio_local.storage_sqlite import SQLiteStorage
 from twins_twilio.app import create_app
 
 app = create_app(storage=SQLiteStorage("twin.db"))
