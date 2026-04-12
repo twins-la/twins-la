@@ -85,6 +85,27 @@ Returns twin configuration:
 }
 ```
 
+### References
+
+```
+GET /_twin/references
+```
+
+Returns the authoritative sources used to build this twin:
+```json
+{
+  "references": [
+    {
+      "title": "<human-readable title>",
+      "url": "<authoritative URL>",
+      "retrieved": "<YYYY-MM-DD>"
+    }
+  ]
+}
+```
+
+Every twin MUST return at least one reference. This list MAY be hardcoded.
+
 ### Account Management
 
 ```
