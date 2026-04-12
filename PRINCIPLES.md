@@ -4,6 +4,29 @@
 
 twins.la exists to provide digital twins that let developers write code against a twin and then run that code against the real system without scenario-specific changes. Exact API fidelity within supported scenarios is the primary goal.
 
+## Definitions
+
+### Twin Plane
+
+A consistent contract across all twins that enables:
+
+* tenant-level operations
+* operational functions (e.g., retrieving logs, clearing state)
+
+The Twin Plane is uniform across all twins.
+
+### Control Plane
+
+The portion of the twin API that mirrors the real service’s control plane exactly.
+
+The Control Plane only needs to support a defined subset of scenarios. Within that subset, behavior MUST match the real service exactly. Outside that subset, behavior is not required.
+
+### Data Plane
+
+The portion of the twin API that mirrors the real service’s data plane exactly.
+
+The Data Plane only needs to support a defined subset of scenarios. Within that subset, behavior MUST match the real service exactly. Outside that subset, behavior is not required.
+
 ## Principles
 
 ### 1. Fidelity is the top priority
@@ -63,7 +86,19 @@ A twin MUST be straightforward to run locally with minimal setup.
 
 The principles MUST NOT prefer local over cloud or cloud over local. Users MAY choose either.
 
-### 8. Twin Plane is standardized
+Local deployments MUST include a default tenant with `tenant_id = "default"`. The default tenant MUST behave identically to a cloud tenant and MUST require no creation step.
+
+The `"default"` tenant MUST NEVER be valid or functional in cloud deployments. This is a strict rule.
+
+### 8. Tenancy is central to the cloud service
+
+Tenants MUST be created via the Twin Plane API. Creating a tenant MUST produce a `tenant_id` and a `secret`.
+
+The caller who creates a tenant MUST have full access within that tenant and MUST NOT have any access outside that tenant.
+
+All operations — including resource creation, log retrieval, and runtime operations — MUST be scoped to a tenant.
+
+### 9. Twin Plane is standardized
 
 Each twin MUST expose a Twin Plane.
 
@@ -73,7 +108,7 @@ Provider-specific extensions MAY exist only if they follow the project’s stand
 
 The Twin Plane MUST expose the supported scenarios for the twin.
 
-### 9. Twin Plane and provider surface are separate concepts
+### 10. Twin Plane and provider surface are separate concepts
 
 The Twin Plane is part of the twin, not part of the real provider.
 
@@ -81,7 +116,11 @@ A twin MAY omit the real provider’s control plane when the supported scenarios
 
 The presence or absence of a provider control plane MUST NOT weaken the fidelity requirement for supported scenarios.
 
-### 10. Logging is mandatory
+If the real service exposes control plane APIs for tenant-scoped operations (e.g., provisioning), those operations MUST exist in the Control Plane. The Twin Plane MUST NOT duplicate them, and SHOULD route or enable use of the Control Plane instead.
+
+If the real service does not expose a control plane API (e.g., portal-only admin interfaces), the Twin Plane MUST provide those operations. Such operations MUST be operationally simple — for example, a single POST to create a resource that becomes usable via Control Plane or Data Plane APIs.
+
+### 11. Logging is mandatory and consistent
 
 A twin MUST log all operations, including content.
 
@@ -89,7 +128,16 @@ A twin MUST provide a programmatic interface for retrieving logs.
 
 A twin MUST provide a programmatic interface for settings.
 
-### 11. Documentation must be source-grounded
+All operations within a twin MUST be logged consistently, and the logs MUST provide a complete and coherent view of system activity. A consistent cross-twin logging structure MUST exist so that logs from any twin can be interpreted uniformly.
+
+Logging MUST cover:
+
+* resource operations
+* Control Plane operations
+* Data Plane operations
+* runtime calls
+
+### 12. Documentation must be source-grounded
 
 All twins MUST include documentation.
 
@@ -97,7 +145,15 @@ Documentation MUST cite the authoritative sources used to build the twin, and MU
 
 The repository is the source of versioning, but the authoritative references MAY exist outside the repository and therefore MUST be cited.
 
-### 12. Minimum project expectations are real
+### 13. Twins must be self-documenting
+
+A twin MUST be able to report the authoritative sources used to build it at runtime.
+
+A GET request to a twin endpoint MUST return the list of documents and references used to create the twin. Each twin MUST maintain a list of its references. This list MAY be hardcoded.
+
+This is the runtime complement to Principle 12. Documentation in the repository is necessary but not sufficient — a running twin MUST be able to answer "what sources were used to build this?" without the caller needing access to the repository.
+
+### 14. Minimum project expectations are real
 
 All twins MUST include:
 
@@ -115,4 +171,3 @@ When there is tension between fidelity and convenience, fidelity MUST win within
 When there is tension between breadth and correctness, correctness within the declared scenario MUST win.
 
 The project SHOULD expand scenario coverage over time, but it MUST NOT dilute the meaning of “supported scenario” in order to appear broader than it is.
-
