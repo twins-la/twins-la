@@ -16,9 +16,9 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 
 | Twin | APIs | URL |
 |------|------|-----|
-| **twilio**.twins.la | Twilio SMS, SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
 | **facebook**.twins.la | Facebook Login (OAuth 2.0, Graph `/me`, `/debug_token`) | [facebook.twins.la](https://facebook.twins.la) |
 | **livekit** | LiveKit rooms, participants, egress, WebSocket signaling | local only — [github.com/twins-la/livekit](https://github.com/twins-la/livekit) |
+| **twilio**.twins.la | Twilio SMS, SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
 
 ## How It Works
 
@@ -66,12 +66,12 @@ with only hostname and credential changes.
 
 ## Available Twins
 
-- twilio.twins.la — Twilio SMS + SendGrid Email APIs
-  Agent instructions: https://twilio.twins.la/_twin/agent-instructions
 - facebook.twins.la — Facebook Login (OAuth 2.0 + Graph API)
   Agent instructions: https://facebook.twins.la/_twin/agent-instructions
 - livekit — LiveKit WebRTC control plane (local only)
   GitHub: https://github.com/twins-la/livekit
+- twilio.twins.la — Twilio SMS + SendGrid Email APIs
+  Agent instructions: https://twilio.twins.la/_twin/agent-instructions
 
 ## How to Use (any twin)
 
