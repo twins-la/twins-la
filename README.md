@@ -18,6 +18,7 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 |------|------|-----|
 | **facebook**.twins.la | Facebook Login (OAuth 2.0, Graph `/me`, `/debug_token`) | [facebook.twins.la](https://facebook.twins.la) |
 | **livekit** | LiveKit rooms, participants, egress, WebSocket signaling | local only — [github.com/twins-la/livekit](https://github.com/twins-la/livekit) |
+| **telegram**.twins.la | Telegram Bot API — messaging | [telegram.twins.la](https://telegram.twins.la) |
 | **twilio**.twins.la | Twilio SMS, SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
 
 ## How It Works
@@ -70,6 +71,8 @@ with only hostname and credential changes.
   Agent instructions: https://facebook.twins.la/_twin/agent-instructions
 - livekit — LiveKit WebRTC control plane (local only)
   GitHub: https://github.com/twins-la/livekit
+- telegram.twins.la — Telegram Bot API (messaging)
+  Agent instructions: https://telegram.twins.la/_twin/agent-instructions
 - twilio.twins.la — Twilio SMS + SendGrid Email APIs
   Agent instructions: https://twilio.twins.la/_twin/agent-instructions
 
@@ -85,6 +88,13 @@ with only hostname and credential changes.
 
 - [Operating Principles](PRINCIPLES.md) — Normative principles governing all twins
 - [Twin Plane Contract](TWIN_PLANE.md) — Full Twin Plane API specification
+- [Hosting Contract](HOSTING_CONTRACT.md) — Twin/host interface, **and the canonical checklist for adding a new twin** (cloud wiring, README edits, website edits — all mandatory)
+- [Logging Specification](LOGGING.md) — Normative log record format
+- [Explainer Template](EXPLAINER_TEMPLATE.md) — Required shape of each twin's `/` landing page
+
+## Adding a new twin
+
+See [HOSTING_CONTRACT.md § Adding a New Twin](HOSTING_CONTRACT.md#adding-a-new-twin) for the full checklist. Updating **this README's twin table and agent-instructions snippet**, plus the **twins-la-website landing page**, are non-optional steps in that checklist — a new twin that is not surfaced on twins.la and in this README is not "added," it is unannounced.
 
 ## License
 

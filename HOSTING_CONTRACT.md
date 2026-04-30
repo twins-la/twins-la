@@ -88,13 +88,49 @@ Storage methods use plain dicts for data. The twin defines what keys it expects;
 
 ## Adding a New Twin
 
-To add a new twin to the platform:
+This is the **canonical, mandatory checklist** for introducing a new twin to the platform. Every step below MUST be completed. A twin that ships its own repo without the cross-cutting surface edits is not "added" — it is invisible to users and to other twins. Reviewers and operators MUST treat any unchecked item as a blocker.
 
-1. Create a new twin package with `create_app(storage, config)`.
-2. Define the twin's storage interface (may extend or differ from TwinStorage).
-3. Implement storage backends in local/ and cloud/ for the new twin.
-4. Add Docker Compose service (local) or Container App (cloud) for the new twin.
-5. The twin MUST expose `/_twin/` Twin Plane endpoints.
+### A. Twin repository (`twins-la/<provider>`)
+
+1. Create the twin package `twins_<provider>/` with `create_app(storage, tenants, config) -> Flask`.
+2. Define the twin's storage interface as a `TwinStorage` ABC (may extend the cross-twin shape; never import a DB driver in the twin package).
+3. Expose every required `/_twin/` Twin Plane endpoint per [TWIN_PLANE.md](TWIN_PLANE.md): `health`, `scenarios`, `references`, `settings`, `tenants` (POST bootstrap), `logs`, `accounts`, plus twin-specific `/simulate/*` as the scenario warrants.
+4. Add `SCENARIOS.md` with cited authoritative URLs and retrieval dates. Mirror the same list at `GET /_twin/references`.
+5. Add the explainer landing page at `GET /` and `GET /_twin/agent-instructions` per [EXPLAINER_TEMPLATE.md](EXPLAINER_TEMPLATE.md).
+6. Implement the local sibling host package `twins_<provider>_local/` (SQLite storage + `python -m twins_<provider>_local`).
+7. Add smoke tests under `tests/smoke/` covering: Twin Plane info endpoints, tenant bootstrap + auth, every supported provider-API method (happy + error paths), inbound simulation, log conformance to [LOGGING.md §3.2](LOGGING.md), tenant isolation, admin auth, feedback. (See `twins-la/twilio` for the reference shape and footprint.)
+8. `README.md` + `LICENSE` (MIT).
+
+### B. Cloud aggregator (`twins-la/cloud`)
+
+9. `Dockerfile.<provider>` — install order: devlogs → twins-local → every other twin → twins-cloud → gunicorn pointing at `twins_cloud.host_<provider>:create_cloud_<provider>_app()`.
+10. `twins_cloud/host_<provider>.py` — Postgres storage + tenant store, devlogs handler with `component="<provider>-twin"`.
+11. `twins_cloud/storage_postgres_<provider>.py` — Postgres impl with `table_prefix="<provider>_"` so tables don't collide.
+12. **Update every existing `Dockerfile` and `Dockerfile.*`** to install the new twin package before `twins-cloud` (twins-cloud declares all sibling twins as deps; missing one breaks every image).
+13. `pyproject.toml` — add `twins-<provider>>=0.2.0` to twins-cloud deps.
+14. `scripts/build.sh`, `scripts/deploy.sh` — build/push and deploy the new image; deploy.sh requires the new `${<PROVIDER>_APP_NAME}` env var.
+15. `Jenkinsfile` — checkout the new sibling repo into `../<provider>`, copy into the build context, run `pytest ../<provider>/tests/`, set `<PROVIDER>_APP_NAME`, surface the new image in the success summary.
+16. Terraform: in `infra/terraform/locals.tf`, `variables.tf` (image, custom_domain, admin_token), `main.tf` (Container App + Key Vault secret + role assignment), `outputs.tf` (FQDN + summary). The Container App MUST set `TENANTS_DATABASE_URL` alongside `DATABASE_URL`.
+17. Custom domain (`<provider>.twins.la`): bind in Azure Portal as a Container App custom domain with a managed cert. This binding lives **out-of-band**, not in Terraform — matches the existing twilio/facebook pattern. (Tracked: a future job will migrate all bindings into Terraform.)
+
+### C. Cross-cutting surfaces (MANDATORY — these are the most-missed)
+
+18. **`twins-la/twins-la` README**: add the new twin to the *Available Twins* table AND to the agent-instructions snippet. A twin missing from this README is undiscoverable through the project's front door.
+19. **`twins-la/twins-la-website` (`twins.la` landing page)**: add a brand color (`.${provider}` CSS class), a twin card, an entry in the agent-instructions block, and a footer link. A twin missing from the website is invisible to every visitor of `twins.la`.
+20. **Build + push** the website image and roll the `twinsla-web` Container App. Edits to the website repo do not auto-deploy without an explicit roll (or a new Jenkins build that updates `:latest`).
+
+### D. Verification (don't sign off without these)
+
+21. `curl https://<provider>.twins.la/_twin/health` → `{"status":"ok","twin":"<provider>","version":"<v>"}`.
+22. `curl https://<provider>.twins.la/_twin/settings` → `base_url` matches `https://<provider>.twins.la` (proves `TWIN_BASE_URL` env wiring).
+23. `curl https://twins.la/ | grep <provider>.twins.la` → returns the new card and agent-instructions entry (proves the website roll succeeded).
+24. `curl https://raw.githubusercontent.com/twins-la/twins-la/main/README.md | grep <provider>.twins.la` → returns the table row and agent-instructions entry (proves the README is published).
+
+A new twin is **not** "added" until all 24 items pass. Items 18–20 are the most commonly missed: a twin that ships its own repo and even deploys to its own subdomain is still invisible to humans and agents until the meta-repo README and the website list it.
+
+### Reviewer checklist
+
+When reviewing a "new twin" change, the reviewer MUST verify items 18–20 by reading the diffs in `twins-la/twins-la` and `twins-la/twins-la-website`. The absence of those diffs is a missing-surface defect, not a follow-up item.
 
 ## Version
 
