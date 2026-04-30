@@ -109,7 +109,7 @@ This is the **canonical, mandatory checklist** for introducing a new twin to the
 12. **Update every existing `Dockerfile` and `Dockerfile.*`** to install the new twin package before `twins-cloud` (twins-cloud declares all sibling twins as deps; missing one breaks every image).
 13. `pyproject.toml` — add `twins-<provider>>=0.2.0` to twins-cloud deps.
 14. `scripts/build.sh`, `scripts/deploy.sh` — build/push and deploy the new image; deploy.sh requires the new `${<PROVIDER>_APP_NAME}` env var.
-15. `Jenkinsfile` — checkout the new sibling repo into `../<provider>`, copy into the build context, run `pytest ../<provider>/tests/`, set `<PROVIDER>_APP_NAME`, surface the new image in the success summary.
+15. `Jenkinsfile` — checkout the new sibling repo into `../<provider>`, copy into the build context, run `pytest ../<provider>/tests/`, set `<PROVIDER>_APP_NAME`, surface the new image in the success summary, **and add the new twin to the `EXPECTED` list in the `Verify Surface Parity` stage** (this is the build-time enforcement that fails the build if the website doesn't list every deployed twin).
 16. Terraform: in `infra/terraform/locals.tf`, `variables.tf` (image, custom_domain, admin_token), `main.tf` (Container App + Key Vault secret + role assignment), `outputs.tf` (FQDN + summary). The Container App MUST set `TENANTS_DATABASE_URL` alongside `DATABASE_URL`.
 17. Custom domain (`<provider>.twins.la`): bind in Azure Portal as a Container App custom domain with a managed cert. This binding lives **out-of-band**, not in Terraform — matches the existing twilio/facebook pattern. (Tracked: a future job will migrate all bindings into Terraform.)
 
@@ -126,7 +126,7 @@ This is the **canonical, mandatory checklist** for introducing a new twin to the
 23. `curl https://twins.la/ | grep <provider>.twins.la` → returns the new card and agent-instructions entry (proves the website roll succeeded).
 24. `curl https://raw.githubusercontent.com/twins-la/twins-la/main/README.md | grep <provider>.twins.la` → returns the table row and agent-instructions entry (proves the README is published).
 
-A new twin is **not** "added" until all 24 items pass. Items 18–20 are the most commonly missed: a twin that ships its own repo and even deploys to its own subdomain is still invisible to humans and agents until the meta-repo README and the website list it.
+A new twin is **not** "added" until all 24 items pass. Items 18–20 are the most commonly missed: a twin that ships its own repo and even deploys to its own subdomain is still invisible to humans and agents until the meta-repo README and the website list it. The Jenkins `Verify Surface Parity` stage (item 15 above) enforces item 19 — if the deployed website doesn't list every twin that has a Container App, the build fails. Push order does not matter (every Jenkins run pulls every sibling repo from `origin/main` fresh), but a missing edit in `twins-la-website` will fail the build loudly.
 
 ### Reviewer checklist
 
