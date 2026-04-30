@@ -19,7 +19,7 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 | **facebook**.twins.la | Facebook Login (OAuth 2.0, Graph `/me`, `/debug_token`) | [facebook.twins.la](https://facebook.twins.la) |
 | **livekit** | LiveKit rooms, participants, egress, WebSocket signaling | local only — [github.com/twins-la/livekit](https://github.com/twins-la/livekit) |
 | **telegram**.twins.la | Telegram Bot API — messaging | [telegram.twins.la](https://telegram.twins.la) |
-| **twilio**.twins.la | Twilio SMS, SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
+| **twilio**.twins.la | Twilio SMS (in/out, MMS, STOP/HELP, status callbacks), SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
 
 ## How It Works
 
@@ -73,7 +73,8 @@ with only hostname and credential changes.
   GitHub: https://github.com/twins-la/livekit
 - telegram.twins.la — Telegram Bot API (messaging)
   Agent instructions: https://telegram.twins.la/_twin/agent-instructions
-- twilio.twins.la — Twilio SMS + SendGrid Email APIs
+- twilio.twins.la — Twilio SMS (bidirectional, MMS, STOP/START/HELP, full
+  delivery-status lifecycle, signed webhooks) + SendGrid Email APIs
   Agent instructions: https://twilio.twins.la/_twin/agent-instructions
 
 ## How to Use (any twin)
