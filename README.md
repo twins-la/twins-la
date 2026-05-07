@@ -18,6 +18,7 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 |------|------|-----|
 | **facebook**.twins.la | Facebook Login (OAuth 2.0, Graph `/me`, `/debug_token`) | [facebook.twins.la](https://facebook.twins.la) |
 | **livekit** | LiveKit rooms, participants, egress, WebSocket signaling | local only — [github.com/twins-la/livekit](https://github.com/twins-la/livekit) |
+| **microsoft-bot-framework**.twins.la | Microsoft Bot Framework — channel (msteams) + bot halves; JWKS, OAuth, JWT-signed activities | [microsoft-bot-framework.twins.la](https://microsoft-bot-framework.twins.la) |
 | **telegram**.twins.la | Telegram Bot API — messaging | [telegram.twins.la](https://telegram.twins.la) |
 | **twilio**.twins.la | Twilio SMS (in/out, MMS, STOP/HELP, status callbacks), SendGrid Email | [twilio.twins.la](https://twilio.twins.la) |
 
@@ -71,6 +72,10 @@ with only hostname and credential changes.
   Agent instructions: https://facebook.twins.la/_twin/agent-instructions
 - livekit — LiveKit WebRTC control plane (local only)
   GitHub: https://github.com/twins-la/livekit
+- microsoft-bot-framework.twins.la — Microsoft Bot Framework (channel + bot halves;
+  JWKS, OAuth client_credentials, JWT-signed activities; manual SDK trust override
+  required — see scenarios)
+  Agent instructions: https://microsoft-bot-framework.twins.la/_twin/agent-instructions
 - telegram.twins.la — Telegram Bot API (messaging)
   Agent instructions: https://telegram.twins.la/_twin/agent-instructions
 - twilio.twins.la — Twilio SMS (bidirectional, MMS, STOP/START/HELP, full
