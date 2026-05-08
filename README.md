@@ -16,6 +16,8 @@ Each twin runs locally (`pip install`) or in the cloud (point at the URL). Same 
 
 | Twin | APIs | URL |
 |------|------|-----|
+| **anthropic**.twins.la | Anthropic Messages API — `/v1/messages` (full + SSE streaming), count_tokens, models list, prompt-caching + extended-thinking betas | [anthropic.twins.la](https://anthropic.twins.la) |
+| **aoai**.twins.la | Azure OpenAI — chat/completions/embeddings under `/<resource>/openai/...`, dual auth (api-key + AAD bearer), JWKS publication, deployments via Twin Plane | [aoai.twins.la](https://aoai.twins.la) |
 | **facebook**.twins.la | Facebook Login (OAuth 2.0, Graph `/me`, `/debug_token`) | [facebook.twins.la](https://facebook.twins.la) |
 | **livekit** | LiveKit rooms, participants, egress, WebSocket signaling | local only — [github.com/twins-la/livekit](https://github.com/twins-la/livekit) |
 | **bf**.twins.la | Microsoft Bot Framework — channel (msteams) + bot halves; JWKS, OAuth, JWT-signed activities | [bf.twins.la](https://bf.twins.la) |
@@ -68,6 +70,15 @@ with only hostname and credential changes.
 
 ## Available Twins
 
+- anthropic.twins.la — Anthropic Messages API (POST /v1/messages full + SSE
+  streaming, count_tokens, models list; prompt-caching + extended-thinking
+  betas via anthropic-beta header; auth: x-api-key + anthropic-version)
+  Agent instructions: https://anthropic.twins.la/_twin/agent-instructions
+- aoai.twins.la — Azure OpenAI (chat/completions, embeddings, completions
+  under /<resource>/openai/deployments/<deployment>/...; dual auth:
+  api-key header OR Azure AD Bearer; JWKS + token endpoint published
+  per resource; deployments managed via Twin Plane, no ARM control plane)
+  Agent instructions: https://aoai.twins.la/_twin/agent-instructions
 - facebook.twins.la — Facebook Login (OAuth 2.0 + Graph API)
   Agent instructions: https://facebook.twins.la/_twin/agent-instructions
 - livekit — LiveKit WebRTC control plane (local only)
