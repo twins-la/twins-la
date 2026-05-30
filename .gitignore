@@ -1,3 +1,6 @@
 # Darkprompts job artifacts must not be committed to public repos
 jobs/
 darkprompts/
+# Local agent/tooling state — never commit
+.devbox/
+.claude/
