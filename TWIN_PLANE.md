@@ -16,6 +16,15 @@ Three auth layers govern Twin Plane access:
    - Credential: the configured `TWIN_ADMIN_TOKEN`.
    - Presented as `Authorization: Bearer <token>` or `X-Twin-Admin-Token: <token>`.
    - Log entries stamp `tenant_id = "__operator_admin__"`.
+   - **Token requirements (normative).** `TWIN_ADMIN_TOKEN` MUST be a 256-bit
+     (32-byte) cryptographically-random value, base64url-encoded (≥43
+     characters). It MUST be stored in a secret manager (Key Vault) and injected
+     via the environment — never hardcoded or committed. Because it is a static
+     bearer token granting permanent cross-tenant access, it MUST be rotatable:
+     **rotation procedure** — generate a new token, update Key Vault, redeploy
+     the affected Container Apps, then invalidate the old value. Treat any
+     suspected leak as a cross-tenant compromise and rotate immediately. The
+     operator runbook in `twins-la/cloud` carries the step-by-step procedure.
 
 2. **Tenant** — a twins.la-platform identity, required on every Twin Plane endpoint
    except the public endpoints listed below and the `POST /_twin/tenants` bootstrap.
