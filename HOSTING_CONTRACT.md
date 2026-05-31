@@ -102,36 +102,28 @@ This is the **canonical, mandatory checklist** for introducing a new twin to the
 8. Add smoke tests under `tests/smoke/` covering: Twin Plane info endpoints, tenant bootstrap + auth, every supported provider-API method (happy + error paths), inbound simulation, log conformance to [LOGGING.md §3.2](LOGGING.md), tenant isolation, admin auth, feedback, **and a parametrized sweep that asserts every unknown path under the provider's URL prefix returns `Content-Type: application/json`, the documented error envelope, and no `<!doctype` HTML leak**. (See `twins-la/twilio` for the reference shape and footprint; `twins-la/aoai`'s `tests/smoke/test_unknown_openai_path.py` for the catch-all sweep pattern.)
 9. `README.md` + `LICENSE` (MIT).
 
-### B. Cloud aggregator (`twins-la/cloud`)
+### B. Cloud aggregator, deploy, and Terraform (`twins-la/cloud`)
 
-10. `Dockerfile.<provider>` — install order: devlogs → twins-local → every other twin → twins-cloud → gunicorn pointing at `twins_cloud.host_<provider>:create_cloud_<provider>_app()`.
-11. `twins_cloud/host_<provider>.py` — Postgres storage + tenant store, devlogs handler with `component="<provider>-twin"`.
-12. `twins_cloud/storage_postgres_<provider>.py` — Postgres impl with `table_prefix="<provider>_"` so tables don't collide.
-13. **Update every existing `Dockerfile` and `Dockerfile.*`** to install the new twin package before `twins-cloud` (twins-cloud declares all sibling twins as deps; missing one breaks every image).
-14. `pyproject.toml` — add `twins-<provider>>=0.2.0` to twins-cloud deps.
-15. `scripts/build.sh`, `scripts/deploy.sh` — build/push and deploy the new image; deploy.sh requires the new `${<PROVIDER>_APP_NAME}` env var.
-16. `Jenkinsfile` — checkout the new sibling repo into `../<provider>`, copy into the build context, run `pytest ../<provider>/tests/`, set `<PROVIDER>_APP_NAME`, surface the new image in the success summary, **and add the new twin to the `EXPECTED` list in the `Verify Surface Parity` stage** (this is the build-time enforcement that fails the build if the website doesn't list every deployed twin).
-17. Terraform: in `infra/terraform/locals.tf`, `variables.tf` (image, custom_domain, admin_token), `main.tf` (Container App + Key Vault secret + role assignment), `outputs.tf` (FQDN + summary). The Container App MUST set `TENANTS_DATABASE_URL` alongside `DATABASE_URL`.
-18. Custom domain (`<provider>.twins.la`): add an entry to `local.managed_certs` in `infra/terraform/main.tf` (one line, mapping `<provider>` → `{ app_name, domain = var.<provider>_twin_custom_domain, validation = "CNAME" }`). The matching `null_resource.bind_custom_domain` runs `az containerapp hostname add/bind` idempotently — first apply binds the domain + provisions a managed cert; subsequent applies short-circuit on `SniEnabled`. Closed twins-la/cloud#15 (initial migration of telegram/msbf/anthropic/aoai bindings into Terraform).
+The cloud build, deploy, CI, and Terraform steps for a new twin live in the
+private `twins-la/cloud` repo — they reference internal infrastructure that
+twin contributors do not need. See the **"Adding a New Twin"** runbook in
+`twins-la/cloud`.
 
 ### C. Cross-cutting surfaces (MANDATORY — these are the most-missed)
 
-19. **`twins-la/twins-la` README**: add the new twin to the *Available Twins* table AND to the agent-instructions snippet. A twin missing from this README is undiscoverable through the project's front door.
-20. **`twins-la/twins-la-website` (`twins.la` landing page)**: add a brand color (`.${provider}` CSS class), a twin card, an entry in the agent-instructions block, and a footer link. A twin missing from the website is invisible to every visitor of `twins.la`.
-21. **Build + push** the website image and roll the `twinsla-web` Container App. Edits to the website repo do not auto-deploy without an explicit roll (or a new Jenkins build that updates `:latest`).
+10. **`twins-la/twins-la` README**: add the new twin to the *Available Twins* table AND to the agent-instructions snippet. A twin missing from this README is undiscoverable through the project's front door.
+11. **`twins-la/twins-la-website` (`twins.la` landing page)**: add a brand color (`.${provider}` CSS class), a twin card, an entry in the agent-instructions block, and a footer link. A twin missing from the website is invisible to every visitor of `twins.la`.
+12. **Build + push** the website image and roll the website Container App. Edits to the website repo do not auto-deploy without an explicit roll (or a new build that updates `:latest`).
 
 ### D. Verification (don't sign off without these)
 
-22. `curl https://<provider>.twins.la/_twin/health` → `{"status":"ok","twin":"<provider>","version":"<v>"}`.
-23. `curl https://<provider>.twins.la/_twin/settings` → `base_url` matches `https://<provider>.twins.la` (proves `TWIN_BASE_URL` env wiring).
-24. `curl https://twins.la/ | grep <provider>.twins.la` → returns the new card and agent-instructions entry (proves the website roll succeeded).
-25. `curl https://raw.githubusercontent.com/twins-la/twins-la/main/README.md | grep <provider>.twins.la` → returns the table row and agent-instructions entry (proves the README is published).
+The end-to-end verification steps (health/settings curls against `https://<provider>.twins.la`, the website and README surface checks, and the deploy-side surface-parity enforcement) live alongside the deploy steps in the private `twins-la/cloud` runbook.
 
-A new twin is **not** "added" until all 25 items pass. Items 19–21 are the most commonly missed: a twin that ships its own repo and even deploys to its own subdomain is still invisible to humans and agents until the meta-repo README and the website list it. The Jenkins `Verify Surface Parity` stage (item 16 above) enforces item 20 — if the deployed website doesn't list every twin that has a Container App, the build fails. Push order does not matter (every Jenkins run pulls every sibling repo from `origin/main` fresh), but a missing edit in `twins-la-website` will fail the build loudly.
+A new twin is **not** "added" until the cloud runbook's checklist passes *and* items 10–12 above are complete. Items 10–12 are the most commonly missed: a twin that ships its own repo and even deploys to its own subdomain is still invisible to humans and agents until the meta-repo README and the website list it. A missing edit in `twins-la-website` will fail the build loudly.
 
 ### Reviewer checklist
 
-When reviewing a "new twin" change, the reviewer MUST verify items 19–21 by reading the diffs in `twins-la/twins-la` and `twins-la/twins-la-website`. The absence of those diffs is a missing-surface defect, not a follow-up item.
+When reviewing a "new twin" change, the reviewer MUST verify items 10–12 by reading the diffs in `twins-la/twins-la` and `twins-la/twins-la-website`. The absence of those diffs is a missing-surface defect, not a follow-up item.
 
 ## Version
 
